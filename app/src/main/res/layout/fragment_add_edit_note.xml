@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AddEditNoteFragment">
+
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/add_edit_toolbar_menu"
+        app:navigationIcon="?homeAsUpIndicator" />
+
+    <EditText
+        android:id="@+id/text_edit_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/edit_text_bg"
+        android:hint="Title"
+        android:paddingVertical="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="30dp"
+        android:textColor="@color/app_orange"
+        android:textColorHint="@color/app_orange"
+        android:textSize="28sp" />
+
+    <EditText
+        android:id="@+id/notetext_ed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/edit_text_bg"
+        android:hint="Text"
+        android:paddingVertical="10dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="30dp"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+</LinearLayout>

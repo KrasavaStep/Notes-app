@@ -5,6 +5,13 @@
     <string name="to_grid">To grid</string>
     <string name="settings">Settings</string>
     <string name="search_hint">Search notes</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="floating_button_description">add_note</string>
+    <string name="delete_note">Delete note</string>
+    <string name="create_todo_list">Create to do list</string>
+    <string name="save_note">Save note</string>
+    <string name="layout_color">Set layout color</string>
+    <string name="share_note">Share note</string>
+
+
 </resources>

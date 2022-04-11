@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item
+    android:id="@+id/delete_note"
+    android:title="@string/delete_note"
+    />
+    <item
+        android:id="@+id/to_do_list"
+        android:title="@string/create_todo_list"
+        />
+
+    <item
+        android:id="@+id/layout_color"
+        android:title="@string/layout_color"
+        android:icon="@drawable/ic_baseline_palette_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/share"
+        android:title="@string/share_note"
+        android:icon="@drawable/ic_baseline_share_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/save"
+        android:title="@string/save_note"
+        android:icon="@drawable/ic_baseline_done_24"
+        app:showAsAction="always"
+        />
+</menu>

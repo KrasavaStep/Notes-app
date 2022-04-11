@@ -1,6 +1,5 @@
 package com.example.notes
 
-import android.os.Binder
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +20,7 @@ class NotesListFragment : Fragment() {
     }
 
     companion object {
+        @JvmStatic
         fun newInstance() = NotesListFragment()
     }
 }
