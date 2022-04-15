@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="margin_top_floating_button">700dp</dimen>
+    <dimen name="margin_top_floating_button">650dp</dimen>
     <dimen name="margin_left_floating_button">300dp</dimen>
 </resources>

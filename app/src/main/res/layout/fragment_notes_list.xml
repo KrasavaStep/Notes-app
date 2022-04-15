@@ -7,42 +7,22 @@
     android:orientation="vertical"
     tools:context=".NotesListFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/main_toolbar_menu"
-        >
-
-        <EditText
-            android:layout_margin="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:maxLines="1"
-            android:background="@drawable/rounded_corners"
-            android:textSize="16sp"
-            android:hint="@string/search_hint"
-            android:padding="5dp"
-            android:drawableLeft="@drawable/ic_baseline_search_24"
-            android:drawablePadding="10dp"
-            />
-
-    </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notes_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="55dp"
+        android:layout_height="60dp"
         android:layout_marginLeft="@dimen/margin_left_floating_button"
         android:layout_marginTop="@dimen/margin_top_floating_button"
+        android:backgroundTint="@color/app_orange"
         android:clickable="true"
         android:contentDescription="@string/floating_button_description"
-        android:backgroundTint="@color/app_orange"
         android:focusable="true"
         android:src="@drawable/ic_baseline_add_24" />
 </FrameLayout>

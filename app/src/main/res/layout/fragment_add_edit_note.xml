@@ -7,19 +7,12 @@
     android:orientation="vertical"
     tools:context=".AddEditNoteFragment">
 
-
-    <com.google.android.material.appbar.MaterialToolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/add_edit_toolbar_menu"
-        app:navigationIcon="?homeAsUpIndicator" />
-
     <EditText
         android:id="@+id/text_edit_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:background="@drawable/edit_text_bg"
+        android:background="@drawable/radio_group"
         android:hint="Title"
         android:paddingVertical="10dp"
         android:paddingLeft="15dp"
@@ -28,16 +21,29 @@
         android:textColorHint="@color/app_orange"
         android:textSize="28sp" />
 
-    <EditText
-        android:id="@+id/notetext_ed"
+    <RadioGroup
+        android:id="@+id/radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:background="@drawable/edit_text_bg"
-        android:hint="Text"
+        android:background="@drawable/radio_group"
         android:paddingVertical="10dp"
         android:paddingLeft="17dp"
         android:paddingRight="30dp"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/notetext_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Text"
+            android:textColor="@color/black"
+            android:textSize="16sp">
+
+        </EditText>
+    </RadioGroup>
+
+
 </LinearLayout>
