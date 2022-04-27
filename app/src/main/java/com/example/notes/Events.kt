@@ -1,4 +1,4 @@
 package com.example.notes
 
-class NoteController {
+class Events {
 }

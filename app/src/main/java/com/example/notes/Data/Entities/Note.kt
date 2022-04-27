@@ -17,7 +17,4 @@ data class Note(
     var creationDate: String,
     var changeDate: String,
     var reminderDate: String? = null,
-
-//    @Ignore
-//    var todo: ArrayList<String>? = null
 ):Parcelable
