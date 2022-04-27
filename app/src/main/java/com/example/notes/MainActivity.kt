@@ -3,7 +3,7 @@ package com.example.notes
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.isVisible
-import com.example.notes.Data.Note
+import com.example.notes.Data.Entities.Note
 import com.example.notes.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), Navigator {
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), Navigator {
                 .commit()
         }
 
-        setSupportActionBar(binding.toolbar)
+       setSupportActionBar(binding.toolbar)
 
         supportFragmentManager.addOnBackStackChangedListener {
             supportActionBar?.setDisplayHomeAsUpEnabled(canNavigate)
@@ -43,10 +43,10 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
-    override fun navigateToAddEditNoteScreen(note: Note?) {
+    override fun navigateToAddEditNoteScreen(noteId: Int) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.main_fragment_container, AddEditNoteFragment.newInstance(note))
+            .replace(R.id.main_fragment_container, AddEditNoteFragment.newInstance(noteId))
             .addToBackStack(null)
             .commit()
     }

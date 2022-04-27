@@ -1,54 +1,62 @@
 package com.example.notes
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.notes.Data.Note
+import com.example.notes.Data.Entities.Note
+import com.example.notes.databinding.NotesListItemBinding
 
-class NotesAdapter(val navigator: Navigator) : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
+class NotesAdapter(
+    private val layoutInflater: LayoutInflater,
+    private val clickListener: NoteClickListener
+) : ListAdapter<Note, NotesAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-    private var notesList = emptyList<Note>()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesAdapter.ViewHolder {
-        val viewObject = LayoutInflater
-            .from(parent.context)
-            .inflate(R.layout.notes_list_item, parent, false)
-        return ViewHolder(viewObject)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = NotesListItemBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: NotesAdapter.ViewHolder, position: Int) {
-        val currentItem = notesList[position]
-        holder.itemTime.text = currentItem.changeDate
-        holder.itemBody.text = currentItem.text
-        holder.itemHeader.text = currentItem.title
-
-        holder.itemLayout.setOnClickListener{
-            navigator.navigateToAddEditNoteScreen(currentItem)
+        val item = getItem(position)
+        holder.binding.apply {
+            noteTime.text = item.changeDate
+            noteBody.text = item.text
+            noteHeader.text = item.title
         }
     }
 
-    override fun getItemCount(): Int {
-        return notesList.size
+    fun setData(notes: List<Note>) {
+        submitList(notes.toMutableList())
     }
 
-    fun setData(notesList : List<Note>){
-        this.notesList = notesList
-        notifyDataSetChanged()
-    }
-
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var itemHeader: TextView
-        var itemBody: TextView
-        var itemTime: TextView
-        var itemLayout: View
-
+    inner class ViewHolder(val binding: NotesListItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemHeader = itemView.findViewById(R.id.note_header)
-            itemBody = itemView.findViewById(R.id.note_body)
-            itemTime = itemView.findViewById(R.id.note_time)
-            itemLayout = itemView.findViewById(R.id.item_layout)
+            binding.root.setOnClickListener {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    val note = getItem(adapterPosition)
+                    clickListener.onNoteClicked(note)
+                }
+            }
+        }
+    }
+
+    interface NoteClickListener {
+        fun onNoteClicked(note: Note)
+    }
+
+    companion object {
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<Note> = object : DiffUtil.ItemCallback<Note>() {
+            override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
+                return oldItem.noteId == newItem.noteId
+            }
+
+            override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 }
