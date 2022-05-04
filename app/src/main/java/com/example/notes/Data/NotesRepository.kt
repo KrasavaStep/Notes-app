@@ -29,11 +29,6 @@ class NotesRepository(private val notesDao: NotesDao) {
         notesDao.addNote(note)
     }
 
-//    suspend fun addNote(){
-//
-//        notesDao.addNote(note)
-//    }
-
     fun getNoteById(noteId: Int)= notesDao.getNoteById(noteId)
 
     suspend fun addToDoListItem(toDoItem: ToDoListItem){

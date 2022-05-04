@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.notes.Data.Entities.Note
 import com.example.notes.Data.Entities.ToDoListItem
 
-@Database(entities = [Note::class, ToDoListItem::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class, ToDoListItem::class], version = 2, exportSchema = false)
 abstract class NotesDatabase () : RoomDatabase() {
 
     abstract fun notesDao() : NotesDao

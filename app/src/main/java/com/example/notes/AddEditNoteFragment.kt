@@ -7,15 +7,10 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notes.Data.AddEditFragmentViewModel
-import com.example.notes.Data.Entities.Note
 import com.example.notes.Data.Entities.ToDoListItem
-import com.example.notes.Data.NotesRepository
-import com.example.notes.Data.NotesViewModel
 import com.example.notes.databinding.FragmentAddEditNoteBinding
-import java.text.DateFormat
-import java.util.*
-import java.util.concurrent.Executors
 
 class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
@@ -25,22 +20,9 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
     private var noteId: Int = 0
     private lateinit var notesViewModel: AddEditFragmentViewModel
-
-    private var toDoList = mutableListOf<ToDoListItem>()
-
+    private lateinit var adapter: TodosAdapter
 
     private var reminderDate: String? = null
-
-    private var _toDoItemMap = mutableMapOf<Int, LinearLayout>()
-    private var toDoItemMap: Map<Int, LinearLayout> = _toDoItemMap
-
-    private var toDoItemId = 0
-
-    private val lParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-    private lateinit var noteBody: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +30,23 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         noteId = arguments?.getInt(ARG_NOTE_ID) ?: INVALID_ID
         val factory = VMFactory().initNotesAddEditScreenVMFactory(noteId)
         notesViewModel = ViewModelProvider(this, factory)[AddEditFragmentViewModel::class.java]
+        adapter = TodosAdapter(layoutInflater, object : TodosAdapter.TodoEditListener {
+            override fun onTextEdited(todo: ToDoListItem, text: String) {
+                val newTodo = todo.copy(text = text)
+                notesViewModel.updateTodoItem(newTodo)
+            }
+
+            override fun onDeleteBtnClicked(todo: ToDoListItem) {
+                Log.d("todolist", "$todo")
+                notesViewModel.deleteTodoItem(todo)
+            }
+
+            override fun onCheckBoxClicked(todo: ToDoListItem, isChecked: Boolean) {
+                val newTodo = todo.copy(isDone = isChecked)
+                notesViewModel.updateTodoItem(newTodo)
+            }
+
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,33 +54,20 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
         _binding = FragmentAddEditNoteBinding.bind(view)
 
-
-
-//        val note = getNoteId()
-//        if (note != null) {
-//            binding.apply {
-//                textEditTitle.setText(note.title)
-//                notetextEd.setText(note.text)
-//                noteBody = noteBodyLayout
-//            }
-//            reminderDate = note.reminderDate
-////            notesViewModel.getToDoListForNote(note.noteId)
-////                .observe(viewLifecycleOwner, Observer { list ->
-////                    for (item in list) {
-////                        createToDoListItem(item.itemId, item.text, item.noteId, item.idInList)
-////                    }
-////                })
-//        }
-
         notesViewModel.currentNoteLiveData.observe(viewLifecycleOwner) {
             binding.notetextEd.setText(it?.text ?: "")
             binding.textEditTitle.setText(it?.title ?: "")
         }
 
-        notesViewModel.isInputError.observe(viewLifecycleOwner){
-            if (it) Toast.makeText(requireContext(), "Not correct", Toast.LENGTH_LONG).show()
-        }
+        setRecycler()
 
+        notesViewModel.noteErrorLiveData.observe(viewLifecycleOwner) {
+            if (it.isInputError) Toast.makeText(
+                requireContext(),
+                it.errorMessage,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
 
@@ -94,7 +80,6 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         when (item.itemId) {
             R.id.save -> {
                 saveNote()
-                //saveToDoList()
                 requireActivity().onBackPressed()
                 return true
             }
@@ -111,15 +96,14 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
                 return true
             }
             R.id.to_do_list -> {
-                saveNote()
-//                createToDoListItem(0, "", noteId, toDoItemId)
-//                showToDoList()
+                saveTodo()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    //TODO
     private fun deleteNote() {
         if (noteId != -1) {
             val builder = AlertDialog.Builder(requireContext())
@@ -127,7 +111,7 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
                 .setTitle(getString(ALERT_DIALOG_TITLE_RES))
                 .setMessage(getString(ALERT_DIALOG_MESSAGE_RES))
                 .setPositiveButton(getString(DEL_BUTTON_TXT_RES)) { _, _ ->
-                    notesViewModel.deleteNote(noteId)
+                    notesViewModel.deleteNote()
                     Toast.makeText(requireContext(), "Successfully deleted", Toast.LENGTH_LONG)
                         .show()
                     requireActivity().onBackPressed()
@@ -144,90 +128,21 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         binding.apply {
             val title = textEditTitle.text.toString()
             val text = notetextEd.text.toString()
-            notesViewModel.saveNote(noteId, text, title, null)
+            notesViewModel.saveNote(text, title, null)
         }
     }
 
-//    private fun createToDoListItem(itemId: Int, text: String, noteId: Int, listId: Int) {
-//        Log.d("SaveList", "create")
-//        lParams.gravity = Gravity.LEFT
-//        val itemContainer = LinearLayout(requireContext())
-//        val checkBox = CheckBox(requireContext())
-//        checkBox.setPadding(0, 100, 0, 0)
-//        val editText = EditText(requireContext())
-//        val buttonDelete = ImageButton(requireContext())
-//        buttonDelete.setImageResource(R.drawable.ic_baseline_delete_24)
-//
-//
-//        editText.setText(text)
-//        buttonDelete.id = listId
-//
-//        itemContainer.addView(checkBox, lParams)
-//        itemContainer.addView(editText, lParams)
-//        itemContainer.addView(buttonDelete, lParams)
-//
-//        val listItem = ToDoListItem(
-//            itemId = itemId,
-//            noteId = noteId,
-//            idInList = listId,
-//            text = text
-//        )
-//
-//        toDoList.add(listItem)
-//
-//        buttonDelete.setOnClickListener {
-//            deleteToDoListItem(buttonDelete.id, listItem)
-//        }
-//        _toDoItemMap[toDoItemId] = itemContainer
-//        toDoItemId++
-//    }
-//
-//    private fun saveToDoList() {
-//        if (toDoList.size != 0) {
-//            var list = listOf<ToDoListItem>()
-//            notesViewModel.getToDoListForNote(noteId)
-//                .observe(viewLifecycleOwner, Observer { list = it })
-//
-//            if (list.isNotEmpty()) {
-//                for (item in list) {
-//                    for (newItem in toDoList) {
-//                        if (item.itemId == newItem.itemId) {
-//                            notesViewModel.updateToDoListItem(newItem)
-//                        } else {
-//                            notesViewModel.addToDoListItem(newItem)
-//                        }
-//                    }
-//                }
-//            } else {
-//                for (item in toDoList) {
-//                    notesViewModel.addToDoListItem(item)
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun deleteToDoListItem(itemId: Int, listItem: ToDoListItem) {
-//        noteBody.removeView(toDoItemMap.getValue(itemId))
-//        _toDoItemMap.remove(itemId)
-//        toDoItemMap = _toDoItemMap
-//        notesViewModel.deleteToDoItem(listItem)
-//
-//    }
-//
-//    private fun showToDoList() {
-//        Executors.newSingleThreadExecutor().execute {
-//            requireActivity().runOnUiThread {
-//                noteBody.removeAllViews()
-//            }
-//            for (item in toDoItemMap) {
-//                requireActivity().runOnUiThread {
-//                    noteBody.addView(item.value, lParams)
-//                }
-//            }
-//        }
-//
-//        saveToDoList()
-//    }
+    private fun saveTodo() {
+        notesViewModel.saveTodo()
+    }
+
+    private fun setRecycler() {
+        binding.todosRecycler.adapter = adapter
+        binding.todosRecycler.layoutManager = LinearLayoutManager(requireContext())
+        notesViewModel.getAllTodos.observe(viewLifecycleOwner) { todos ->
+            adapter.setData(todos)
+        }
+    }
 
     private fun share() {
 
@@ -236,9 +151,6 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     private fun changeTheme() {
 
     }
-
-    //private fun getNoteId() = requireArguments().getInt(ARG_NOTE_ID)
-
 
     companion object {
 

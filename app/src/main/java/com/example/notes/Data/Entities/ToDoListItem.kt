@@ -8,6 +8,6 @@ data class ToDoListItem(
     @PrimaryKey(autoGenerate = true)
     val itemId: Int,
     val noteId: Int,
-    val idInList: Int,
+    val isDone: Boolean,
     val text: String
 )

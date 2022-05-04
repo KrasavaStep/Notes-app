@@ -3,13 +3,9 @@ package com.example.notes
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notes.Data.Entities.Note
-import com.example.notes.Data.NotesRepository
 import com.example.notes.Data.NotesViewModel
 import com.example.notes.databinding.FragmentNotesListBinding
 
@@ -58,9 +54,9 @@ class NotesListFragment : Fragment(R.layout.fragment_notes_list) {
     private fun setRecycler(){
         binding.notesRecycler.adapter = adapter
         binding.notesRecycler.layoutManager = GridLayoutManager(requireContext(), 2)
-        notesViewModel.getAllNotes.observe(viewLifecycleOwner, Observer { users ->
-            adapter.setData(users)
-        })
+        notesViewModel.getAllNotes.observe(viewLifecycleOwner) { notes ->
+            adapter.setData(notes)
+        }
     }
 
 
