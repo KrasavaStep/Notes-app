@@ -1,4 +1,4 @@
-package com.example.notes
+package com.example.notes.NoteDetailsScreen
 
 import android.graphics.Paint
 import android.text.Editable
@@ -25,7 +25,6 @@ class TodosAdapter(
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     val todo = getItem(adapterPosition)
                     todoEditListener.onDeleteBtnClicked(todo)
-                    Log.d("todolist", "$todo")
                 }
             }
             binding.todoText.addTextChangedListener(object : TextWatcher {
@@ -49,10 +48,9 @@ class TodosAdapter(
             })
 
             binding.todoCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                if (adapterPosition != RecyclerView.NO_POSITION){
+                if (adapterPosition != RecyclerView.NO_POSITION) {
                     val todo = getItem(adapterPosition)
                     todoEditListener.onCheckBoxClicked(todo, isChecked)
-                    Log.d("todolist", "$todo")
                 }
             }
         }
@@ -68,10 +66,10 @@ class TodosAdapter(
         holder.binding.apply {
             todoText.setText(item.text)
             todoCheckbox.isChecked = item.isDone
-            if (item.isDone){
+            Log.d("logmy", item.isDone.toString())
+            if (item.isDone) {
                 todoText.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-            }
-            else todoText.paintFlags = Paint.LINEAR_TEXT_FLAG
+            } else todoText.paintFlags = Paint.LINEAR_TEXT_FLAG
         }
     }
 

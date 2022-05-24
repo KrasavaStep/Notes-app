@@ -3,7 +3,8 @@ package com.example.notes
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.isVisible
-import com.example.notes.Data.Entities.Note
+import com.example.notes.NoteDetailsScreen.AddEditNoteFragment
+import com.example.notes.NoteListScreen.NotesListFragment
 import com.example.notes.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), Navigator {
@@ -49,5 +50,9 @@ class MainActivity : AppCompatActivity(), Navigator {
             .replace(R.id.main_fragment_container, AddEditNoteFragment.newInstance(noteId))
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun goBack() {
+        supportFragmentManager.popBackStack()
     }
 }

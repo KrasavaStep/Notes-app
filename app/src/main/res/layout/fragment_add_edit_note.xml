@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AddEditNoteFragment">
+    tools:context=".NoteDetailsScreen.AddEditNoteFragment">
 
     <EditText
         android:id="@+id/text_edit_title"

@@ -10,4 +10,11 @@ data class ToDoListItem(
     val noteId: Int,
     val isDone: Boolean,
     val text: String
-)
+){
+    override fun equals(other: Any?): Boolean {
+        if (other is ToDoListItem) {
+            return other.itemId == itemId && other.isDone == isDone
+        }
+        return false
+    }
+}

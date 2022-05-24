@@ -1,25 +1,25 @@
-package com.example.notes
+package com.example.notes.NoteDetailsScreen
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.notes.Data.AddEditFragmentViewModel
 import com.example.notes.Data.Entities.ToDoListItem
+import com.example.notes.R
+import com.example.notes.VMFactory
 import com.example.notes.databinding.FragmentAddEditNoteBinding
+import com.example.notes.navigator
 
 class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
     private var _binding: FragmentAddEditNoteBinding? = null
     private val binding
         get() = _binding!!
-
-    private var noteId: Int = 0
-    private lateinit var notesViewModel: AddEditFragmentViewModel
+    private var noteId = 0
+    private lateinit var addEditViewModel: AddEditFragmentViewModel
     private lateinit var adapter: TodosAdapter
 
     private var reminderDate: String? = null
@@ -28,22 +28,23 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         noteId = arguments?.getInt(ARG_NOTE_ID) ?: INVALID_ID
-        val factory = VMFactory().initNotesAddEditScreenVMFactory(noteId)
-        notesViewModel = ViewModelProvider(this, factory)[AddEditFragmentViewModel::class.java]
+
+        val factory = VMFactory().initAddEditScreenVMFactory(noteId)
+        addEditViewModel = ViewModelProvider(this, factory)[AddEditFragmentViewModel::class.java]
+
         adapter = TodosAdapter(layoutInflater, object : TodosAdapter.TodoEditListener {
             override fun onTextEdited(todo: ToDoListItem, text: String) {
                 val newTodo = todo.copy(text = text)
-                notesViewModel.updateTodoItem(newTodo)
+                addEditViewModel.updateTodoItem(newTodo)
             }
 
             override fun onDeleteBtnClicked(todo: ToDoListItem) {
-                Log.d("todolist", "$todo")
-                notesViewModel.deleteTodoItem(todo)
+                addEditViewModel.deleteTodoItem(todo)
             }
 
             override fun onCheckBoxClicked(todo: ToDoListItem, isChecked: Boolean) {
                 val newTodo = todo.copy(isDone = isChecked)
-                notesViewModel.updateTodoItem(newTodo)
+                addEditViewModel.updateTodoItem(newTodo)
             }
 
         })
@@ -54,19 +55,25 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
 
         _binding = FragmentAddEditNoteBinding.bind(view)
 
-        notesViewModel.currentNoteLiveData.observe(viewLifecycleOwner) {
+        addEditViewModel.currentNoteLiveData.observe(viewLifecycleOwner) {
             binding.notetextEd.setText(it?.text ?: "")
             binding.textEditTitle.setText(it?.title ?: "")
         }
 
-        setRecycler()
+        setTodoRecycler()
 
-        notesViewModel.noteErrorLiveData.observe(viewLifecycleOwner) {
+        addEditViewModel.noteErrorLiveData.observe(viewLifecycleOwner) {
             if (it.isInputError) Toast.makeText(
                 requireContext(),
                 it.errorMessage,
                 Toast.LENGTH_SHORT
             ).show()
+        }
+
+        addEditViewModel.showDeleteDialogEvent.observe(viewLifecycleOwner){
+            it.getContentIfNotHandled()?.let {
+                showDeleteDialog()
+            }
         }
     }
 
@@ -84,7 +91,7 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
                 return true
             }
             R.id.delete_note -> {
-                deleteNote()
+                addEditViewModel.onDeleteClicked()
                 return true
             }
             R.id.share -> {
@@ -104,20 +111,19 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     }
 
     //TODO
-    private fun deleteNote() {
+    private fun showDeleteDialog() {
         if (noteId != -1) {
             val builder = AlertDialog.Builder(requireContext())
             builder
                 .setTitle(getString(ALERT_DIALOG_TITLE_RES))
                 .setMessage(getString(ALERT_DIALOG_MESSAGE_RES))
                 .setPositiveButton(getString(DEL_BUTTON_TXT_RES)) { _, _ ->
-                    notesViewModel.deleteNote()
+                    addEditViewModel.deleteNote()
                     Toast.makeText(requireContext(), "Successfully deleted", Toast.LENGTH_LONG)
                         .show()
-                    requireActivity().onBackPressed()
+                    navigator().goBack()
                 }
                 .setNegativeButton(getString(CANCEL_BUTTON_TXT_RES)) { _, _ -> }
-
             builder.show()
         } else {
             Toast.makeText(requireContext(), "Nothing to delete", Toast.LENGTH_LONG).show()
@@ -128,18 +134,18 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         binding.apply {
             val title = textEditTitle.text.toString()
             val text = notetextEd.text.toString()
-            notesViewModel.saveNote(text, title, null)
+            addEditViewModel.saveNote(text, title, null)
         }
     }
 
     private fun saveTodo() {
-        notesViewModel.saveTodo()
+        addEditViewModel.saveTodo()
     }
 
-    private fun setRecycler() {
+    private fun setTodoRecycler() {
         binding.todosRecycler.adapter = adapter
         binding.todosRecycler.layoutManager = LinearLayoutManager(requireContext())
-        notesViewModel.getAllTodos.observe(viewLifecycleOwner) { todos ->
+        addEditViewModel.getAllTodos.observe(viewLifecycleOwner) { todos ->
             adapter.setData(todos)
         }
     }

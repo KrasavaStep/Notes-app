@@ -1,4 +1,4 @@
-package com.example.notes
+package com.example.notes.NoteListScreen
 
 import android.os.Bundle
 import android.view.*
@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.notes.Data.Entities.Note
-import com.example.notes.Data.NotesViewModel
+import com.example.notes.R
+import com.example.notes.VMFactory
 import com.example.notes.databinding.FragmentNotesListBinding
+import com.example.notes.navigator
 
 class NotesListFragment : Fragment(R.layout.fragment_notes_list) {
 
@@ -21,9 +23,9 @@ class NotesListFragment : Fragment(R.layout.fragment_notes_list) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        val factory = VMFactory().initNotesVMFactory()
+        val factory = VMFactory().initNotesScreenVMFactory()
         notesViewModel = ViewModelProvider(this, factory)[NotesViewModel::class.java]
-        adapter = NotesAdapter(layoutInflater, object : NotesAdapter.NoteClickListener{
+        adapter = NotesAdapter(layoutInflater, object : NotesAdapter.NoteClickListener {
             override fun onNoteClicked(note: Note) {
                 notesViewModel.onNoteClicked(note)
             }

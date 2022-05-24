@@ -1,13 +1,16 @@
-package com.example.notes.Data
+package com.example.notes.NoteDetailsScreen
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.notes.ApplicationContext.Companion.INSTANCE
 import com.example.notes.Data.Entities.Note
 import com.example.notes.Data.Entities.ToDoListItem
+import com.example.notes.Data.NotesRepository
+import com.example.notes.DataEvent
+import com.example.notes.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -26,9 +29,15 @@ class AddEditFragmentViewModel(private val repository: NotesRepository, private 
     private val _noteErrorLiveData = MutableLiveData(noteError)
     val noteErrorLiveData: LiveData<NoteError> = _noteErrorLiveData
 
+    private val _showDeleteDialogEvent = MutableLiveData<DataEvent<Unit>>()
+    val showDeleteDialogEvent: LiveData<DataEvent<Unit>> = _showDeleteDialogEvent
+
     fun saveNote(noteText: String, noteTitle: String, remainderDate: String?) {
         if (!inputCheck(noteText, noteTitle)) {
-            noteError = noteError.copy(isInputError = true, errorMessage = "fill out all fields")
+            noteError = noteError.copy(
+                isInputError = true,
+                errorMessage = INSTANCE.getString(FIELDS_FILL_ERROR)
+            )
             _noteErrorLiveData.value = noteError
             return
         }
@@ -53,7 +62,10 @@ class AddEditFragmentViewModel(private val repository: NotesRepository, private 
 
     fun saveTodo() {
         if (noteId == -1) {
-            noteError = noteError.copy(isInputError = true, errorMessage = "You must to save note")
+            noteError = noteError.copy(
+                isInputError = true,
+                errorMessage = INSTANCE.getString(SAVE_NOTE_WARNING)
+            )
             _noteErrorLiveData.value = noteError
             return
         }
@@ -73,13 +85,13 @@ class AddEditFragmentViewModel(private val repository: NotesRepository, private 
         }
     }
 
-    fun updateTodoItem(todo: ToDoListItem){
+    fun updateTodoItem(todo: ToDoListItem) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateToDoListItem(todo)
         }
     }
 
-    fun deleteTodoItem(todo: ToDoListItem){
+    fun deleteTodoItem(todo: ToDoListItem) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteToDoItem(todo)
         }
@@ -87,5 +99,14 @@ class AddEditFragmentViewModel(private val repository: NotesRepository, private 
 
     private fun inputCheck(title: String, text: String): Boolean {
         return !(title.isEmpty() && text.isEmpty())
+    }
+
+    fun onDeleteClicked() {
+        _showDeleteDialogEvent.value = DataEvent(Unit)
+    }
+
+    companion object {
+        const val FIELDS_FILL_ERROR = R.string.fill_fields_error_msg
+        const val SAVE_NOTE_WARNING = R.string.save_note_warning_msg
     }
 }

@@ -1,4 +1,4 @@
-package com.example.notes
+package com.example.notes.NoteListScreen
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -18,7 +18,7 @@ class NotesAdapter(
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: NotesAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         holder.binding.apply {
             noteTime.text = item.changeDate
